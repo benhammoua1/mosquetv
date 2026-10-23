@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <!--
+  TAMPA MOSQUE TV
+-->
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Tampa Mosque • Prayer Display
+  </title>
+  <style>
+   /* ===== DISPLAY STYLES — edit fonts, colors and layout here ===== */
+* {
+  box-sizing: border-box
+}
+
+body {
+  margin: 0;
+  background: #071d20;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif
+}
+
+body:before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(2, 23, 26, .92), rgba(2, 23, 26, .45)), var(--mosque-photo) center/cover;
+  z-index: -1
+}
+
+.screen {
+  min-height: 100vh;
+  padding: 3vh 4vw;
+  display: flex;
+  flex-direction: column;
+  gap: 3vh
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ffffff30;
+  padding-bottom: 2vh
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 18px
+}
+
+.mark {
+  font-size: 44px;
+  color: #e5c68c
+}
+
+h1 {
+  font-size: clamp(24px, 2.5vw, 48px);
+  margin: 0 0 8px;
+  letter-spacing: .02em
+}
+
+.eyebrow {
+  color: #e5c68c;
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  font-size: clamp(12px, 1vw, 20px)
+}
+
+.arabic {
+  font-size: clamp(24px, 2.5vw, 46px);
+  color: #ead6b1
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 5vw;
+  flex: 1;
+  align-items: center
+}
+
+.clock {
+  font-size: clamp(65px, 8.6vw, 175px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.065em;
+  line-height: 1.1;
+  font-weight: 600
+}
+
+.seconds {
+  font-size: .38em;
+  color: #d5deda;
+  letter-spacing: -.03em
+}
+
+.ampm {
+  font-size: 20px;
+  letter-spacing: .12em;
+  color: #e5c68c
+}
+
+.date {
+  font-size: clamp(18px, 1.6vw, 30px);
+  margin: 18px 0 8px
+}
+
+.hijri {
+  color: #d0dcd6;
+  font-size: clamp(15px, 1.2vw, 23px)
+}
+
+.next {
+  margin: 4vh 0 3vh;
+  border-left: 3px solid #e5c68c;
+  padding: 6px 0 6px 22px
+}
+
+.next h2 {
+  font-size: clamp(25px, 2.5vw, 46px);
+  margin: 10px 0
+}
+
+.countdown {
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(28px, 3.2vw, 62px);
+  color: #e5c68c
+}
+
+.weather {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  border-top: 1px solid #ffffff30;
+  padding-top: 22px
+}
+
+.weather-icon {
+  font-size: 48px
+}
+
+.temp {
+  font-size: clamp(28px, 3vw, 52px)
+}
+
+.muted {
+  color: #cad5d0
+}
+
+.small {
+  font-size: 13px;
+  line-height: 1.6
+}
+
+.board {
+  border: 1px solid #ffffff30;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #082a2ac9;
+  backdrop-filter: blur(14px)
+}
+
+.board-title {
+  padding: 24px 28px;
+  background: #ffffff08;
+  display: flex;
+  justify-content: space-between;
+  align-items: center
+}
+
+.board-title h2 {
+  margin: 0;
+  font-size: 26px
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr .9fr;
+  align-items: center;
+  padding: 2.1vh 28px;
+  border-top: 1px solid #ffffff1a;
+  gap: 10px
+}
+
+.labels {
+  padding: 14px 28px;
+  color: #d7c69e;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .14em
+}
+
+.prayer {
+  font-size: clamp(21px, 2vw, 36px);
+  font-weight: 600
+}
+
+.ar {
+  font-size: 17px;
+  display: block;
+  font-weight: 400;
+  color: #c2d0c9;
+  margin-top: 5px
+}
+
+.time {
+  font-size: clamp(22px, 2.3vw, 43px);
+  font-variant-numeric: tabular-nums
+}
+
+.time small {
+  font-size: .4em;
+  color: #cad5d0
+}
+
+.iqama {
+  font-size: clamp(17px, 1.7vw, 30px);
+  color: #d6dfd9
+}
+
+.active {
+  background: #e5c68c;
+  color: #102e2c
+}
+
+.active .ar,
+.active small,
+.active .iqama {
+  color: #34504a
+}
+
+.board-foot {
+  padding: 14px 28px;
+  color: #cbd7cf;
+  font-size: 12px
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #ffffff30;
+  padding-top: 18px;
+  gap: 20px
+}
+
+.message {
+  font-size: clamp(16px, 1.5vw, 28px);
+  color: #eee4cf
+}
+
+button {
+  cursor: pointer;
+  background: #ffffff12;
+  color: white;
+  border: 1px solid #ffffff40;
+  border-radius: 8px;
+  padding: 10px 14px
+}
+
+button:hover {
+  background: #ffffff26
+}
+
+dialog {
+  max-width: 620px;
+  width: 92%;
+  max-height: 90vh;
+  border: 1px solid #54736a;
+  border-radius: 18px;
+  background: #102d2b;
+  color: #fff;
+  padding: 28px
+}
+
+dialog::backdrop {
+  background: #000b
+}
+
+label {
+  display: block;
+  margin: 15px 0 6px
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #53736c;
+  background: #09221f;
+  color: white;
+  font: inherit
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px
+}
+
+.status {
+  color: #d7c69e;
+  min-height: 20px
+}
+
+.controls {
+  display: flex;
+  gap: 8px
+}
+
+@media(max-width:850px) {
+  .main {
+    grid-template-columns: 1fr;
+    gap: 30px
+  }
+
+  .clock {
+    font-size: 90px
+  }
+
+  .screen {
+    padding: 24px
+  }
+
+  .arabic {
+    display: none
+  }
+
+  .row {
+    padding: 18px
+  }
+
+  .weather {
+    margin-bottom: 20px
+  }
+
+  footer {
+    flex-wrap: wrap
+  }
+
+  .board-title {
+    padding: 20px
+  }
+}
+
+@media(min-width:851px) and (max-height:750px) {
+  .screen {
+    gap: 2vh
+  }
+
+  .row {
+    padding-top: 1.4vh;
+    padding-bottom: 1.4vh
+  }
+
+  .next {
+    margin: 2vh 0
+  }
+
+  .board-title {
+    padding: 16px 28px
+  }
+
+  .ar {
+    font-size: 14px
+  }
+
+  .clock {
+    font-size: 8vw
+  }
+}
+
+.creator-banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 22px;
+  border: 1px solid #e5c68c60;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #123a35ed, #082724ed);
+  color: #e9dfc9;
+  text-align: center;
+  font-size: clamp(14px, 1.2vw, 23px);
+  box-shadow: 0 6px 24px #0002
+}
+
+.creator-banner a {
+  color: #f3d49a;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: .03em
+}
+
+.creator-banner a:hover {
+  text-decoration: underline
+}
+
+.creator-banner span[lang] {
+  color: #cadbd3;
+  font-size: .88em
+}
+  </style>
+ </head>
+ <body>
+  <div class="screen">
+   <!-- HEADER — mosque name and Arabic greeting -->
+   <header>
+    <div class="brand">
+     <div class="mark">
+      ☪ Omar Mokhtar Mosque
+     </div>
+     <div>
+      <h1 id="mosqueName">
+       
+      </h1>
+      <div class="eyebrow">
+       
+      </div>
+     </div>
+    </div>
+    <div class="arabic" dir="rtl" lang="ar">
+      بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ  مسجد عمر المختار
+    </div>
+   </header>
+   <!-- MAIN DISPLAY — live clock, weather and prayer table -->
+   <main class="main">
+    <section>
+     <div class="eyebrow">
+      
+     </div>
+     <div class="clock">
+      <span id="clock">
+       --:--
+      </span>
+      <span class="seconds" id="seconds">
+       :--
+      </span>
+     </div>
+     <div class="ampm" id="ampm">
+     </div>
+     <div class="date" id="date">
+     </div>
+     <div class="hijri" id="hijri">
+     </div>
+     <div class="next">
+      <div class="eyebrow" id="nextLabel">
+       Next prayer
+      </div>
+      <h2 id="nextName">
+       
+      </h2>
+      <div class="countdown" id="countdown">
+       --:--:--
+      </div>
+     </div>
+     <div class="weather">
+      <div class="weather-icon" id="weatherIcon">
+       ☁
+      </div>
+      <div>
+       <div class="temp" id="temperature">
+        --°F
+       </div>
+       <div id="weatherText">
+        Loading Tampa weather…
+       </div>
+       <div class="muted small" id="weatherDetails">
+       </div>
+       <div class="small" id="weatherSummary" style="margin-top:7px">
+       </div>
+       <div class="small" id="weatherSource" style="color:#e5c68c;margin-top:7px">
+       </div>
+      </div>
+     </div>
+    
+    </section>
+    <section class="board">
+     <div class="board-title">
+      <h2>
+       Today's prayers
+      </h2>
+      <span dir="rtl" lang="ar">
+       أوقات الصلاة
+      </span>
+     </div>
+     <div class="row labels">
+      <div>
+       Prayer
+      </div>
+      <div>
+       Adhan
+      </div>
+      <div>
+       Iqama
+      </div>
+     </div>
+     <div id="prayers">
+     </div>
+     <div class="board-foot">
+      <div class="status" id="prayerStatus">
+       
+      </div>
+      <div id="methodLabel">
+       
+      </div>
+      <div>
+       
+      </div>
+     </div>
+    </section>
+   </main>
+   <!-- FOOTER — announcement and display controls -->
+   <footer>
+    <div class="message" id="message">
+     Welcome • Please silence your mobile phones
+    </div>
+    <div class="controls">
+     <button id="full">
+      ⛶ Full screen
+     </button>
+     <button id="live">
+      Live TimesPrayer
+     </button>
+     <button id="settings">
+      ⚙ Settings
+     </button>
+    </div>
+   </footer>
+   <!--  -->
+   <div aria-label="Creator credit" class="creator-banner">
+    
+    <a href="https://benhamtech.com" rel="noopener" target="_blank">
+     CREATED BY: BENHAMTECH.COM
+    </a>
+    
+    <span dir="rtl" lang="ar">
+     
+    </span>
+   </div>
+   <div class="small muted">
+       </div>
+  </div>
+  <dialog id="dialog">
+   <h2>
+    Display settings
+   </h2>
+   <form id="form">
+    <label>
+     Mosque name
+     <input id="nameInput" maxlength="60"/>
+    </label>
+    <label>
+     Announcement
+     <input id="messageInput" maxlength="160"/>
+    </label>
+    <label hidden="">
+     Asr calculation
+     <select id="school">
+      <option value="0">
+       Standard (Shafi / Maliki / Hanbali)
+      </option>
+      <option value="1">
+       Hanafi
+      </option>
+     </select>
+    </label>
+    <p class="small muted">
+     Prayer times are imported from TimesPrayer.com for 21 Oct–19 Dec 2026. Use Live TimesPrayer for its current widget. The Arabic Hijri date is copied only for the source date; later dates require a fresh import. Set your mosque's actual iqama times below, in 24-hour format. Blank means unset. Sunrise has no iqama. This display does not include a Jumu'ah schedule.
+    </p>
+    <label>
+     Weather API endpoint (HTTPS)
+     <input id="weatherEndpoint" placeholder="https://your-server.example/weather/tampa" type="url"/>
+    </label>
+    <p class="small muted">
+     Enter an authorized endpoint returning your supplied JSON format. Requests use place_id=tampa, language=en, unit=us as query parameters. Enable browser access (CORS). Keep private keys on your server. Without an endpoint, the supplied sample is displayed and labeled.
+    </p>
+    <label>
+     Refresh schedule + Hijri date from TimesPrayer
+     <input accept=".html,.htm,text/html" id="importSource" type="file"/>
+    </label>
+    <p class="small muted">
+     Open the Tampa TimesPrayer page and save it as HTML, then select that file here. Imported schedules stay in this browser.
+    </p>
+    <div class="fields" id="iqamaInputs">
+    </div>
+    <div class="actions">
+     <button type="submit">
+      Save settings
+     </button>
+     <button id="close" type="button">
+      Cancel
+     </button>
+    </div>
+    <p class="small" id="saveStatus">
+    </p>
+   </form>
+  </dialog>
+  <dialog id="liveDialog" style="max-width:850px;width:94%">
+   <h2>
+    Live TimesPrayer • Tampa
+   </h2>
+   <iframe id="sourceFrame" style="border:0;width:100%;height:440px;background:white" title="Official TimesPrayer Tampa prayer times">
+   </iframe>
+   <p class="small">
+    Official source widget • Internet required.
+    <a href="https://timesprayer.com/en/prayer-times-in-tampa.html" rel="noopener" style="color:#e5c68c" target="_blank">
+     Open source page, including Hijri date ↗
+    </a>
+   </p>
+   <button onclick="document.getElementById('liveDialog').close()">
+    Close
+   </button>
+  </dialog>
+  <!-- MAIN JAVASCRIPT — clearly labeled sections below -->
+  
+  <script>
+   // ===== BACKGROUND PHOTO — replace this URL with your own photo =====
+document.documentElement.style.setProperty('--mosque-photo', 'url("https://images.unsplash.com/photo-1519817650390-64a93db51149?w=1920&q=85&fit=crop")');
+
+// All CSS and JavaScript are in this file. The mosque photograph loads from an online URL.
+// TimesPrayer imported schedule + official live widget. Weather Company requires an authorized server endpoint.
+// ===== CONFIGURATION: location and Tampa timezone =====
+const TZ = 'America/New_York',
+  LAT = 27.9506,
+  LON = -82.4572;
+const NAMES = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'],
+  AR = ['الفجر', 'الشروق', 'الظهر', 'العصر', 'المغرب', 'العشاء'];
+const $ = id => document.getElementById(id); // ===== DEFAULT SETTINGS: browser-saved settings take precedence =====
+let cfg = {
+  name: 'Tampa Mosque',
+  message: 'Welcome • Please silence your mobile phones',
+  school: 0,
+  iqama: {}
+};
+try {
+  cfg = {
+    ...cfg,
+    ...JSON.parse(localStorage.getItem('tampa-mosque-settings') || '{}')
+  }
+} catch (e) {}
+// ===== PRAYER SCHEDULE: imported from TimesPrayer, 21 Oct–19 Dec 2026 =====
+let days = {
+    "2026-10-21": {
+      "timings": {
+        "Fajr": "06:29",
+        "Sunrise": "07:34",
+        "Dhuhr": "13:14",
+        "Asr": "16:29",
+        "Maghrib": "18:55",
+        "Isha": "20:00"
+      },
+      "hijri": "الأربعاء، ١٠ جمادى الأولى ١٤٤٨ هـ • TimesPrayer.com"
+    },
+    "2026-10-22": {
+      "timings": {
+        "Fajr": "06:30",
+        "Sunrise": "07:35",
+        "Dhuhr": "13:14",
+        "Asr": "16:28",
+        "Maghrib": "18:54",
+        "Isha": "19:59"
+      },
+      "hijri": ""
+    },
+    "2026-10-23": {
+      "timings": {
+        "Fajr": "06:30",
+        "Sunrise": "07:35",
+        "Dhuhr": "13:14",
+        "Asr": "16:28",
+        "Maghrib": "18:53",
+        "Isha": "19:58"
+      },
+      "hijri": ""
+    },
+    "2026-10-24": {
+      "timings": {
+        "Fajr": "06:31",
+        "Sunrise": "07:36",
+        "Dhuhr": "13:14",
+        "Asr": "16:27",
+        "Maghrib": "18:52",
+        "Isha": "19:57"
+      },
+      "hijri": ""
+    },
+    "2026-10-25": {
+      "timings": {
+        "Fajr": "06:31",
+        "Sunrise": "07:36",
+        "Dhuhr": "13:14",
+        "Asr": "16:26",
+        "Maghrib": "18:51",
+        "Isha": "19:56"
+      },
+      "hijri": ""
+    },
+    "2026-10-26": {
+      "timings": {
+        "Fajr": "06:32",
+        "Sunrise": "07:37",
+        "Dhuhr": "13:14",
+        "Asr": "16:26",
+        "Maghrib": "18:50",
+        "Isha": "19:55"
+      },
+      "hijri": ""
+    },
+    "2026-10-27": {
+      "timings": {
+        "Fajr": "06:32",
+        "Sunrise": "07:38",
+        "Dhuhr": "13:14",
+        "Asr": "16:25",
+        "Maghrib": "18:49",
+        "Isha": "19:55"
+      },
+      "hijri": ""
+    },
+    "2026-10-28": {
+      "timings": {
+        "Fajr": "06:33",
+        "Sunrise": "07:38",
+        "Dhuhr": "13:14",
+        "Asr": "16:25",
+        "Maghrib": "18:49",
+        "Isha": "19:54"
+      },
+      "hijri": ""
+    },
+    "2026-10-29": {
+      "timings": {
+        "Fajr": "06:34",
+        "Sunrise": "07:39",
+        "Dhuhr": "13:14",
+        "Asr": "16:24",
+        "Maghrib": "18:48",
+        "Isha": "19:53"
+      },
+      "hijri": ""
+    },
+    "2026-10-30": {
+      "timings": {
+        "Fajr": "06:34",
+        "Sunrise": "07:40",
+        "Dhuhr": "13:14",
+        "Asr": "16:23",
+        "Maghrib": "18:47",
+        "Isha": "19:53"
+      },
+      "hijri": ""
+    },
+    "2026-10-31": {
+      "timings": {
+        "Fajr": "06:35",
+        "Sunrise": "07:40",
+        "Dhuhr": "13:14",
+        "Asr": "16:23",
+        "Maghrib": "18:46",
+        "Isha": "19:52"
+      },
+      "hijri": ""
+    },
+    "2026-11-01": {
+      "timings": {
+        "Fajr": "05:35",
+        "Sunrise": "06:41",
+        "Dhuhr": "12:13",
+        "Asr": "15:22",
+        "Maghrib": "17:45",
+        "Isha": "18:51"
+      },
+      "hijri": ""
+    },
+    "2026-11-02": {
+      "timings": {
+        "Fajr": "05:36",
+        "Sunrise": "06:42",
+        "Dhuhr": "12:13",
+        "Asr": "15:22",
+        "Maghrib": "17:45",
+        "Isha": "18:51"
+      },
+      "hijri": ""
+    },
+    "2026-11-03": {
+      "timings": {
+        "Fajr": "05:37",
+        "Sunrise": "06:43",
+        "Dhuhr": "12:13",
+        "Asr": "15:21",
+        "Maghrib": "17:44",
+        "Isha": "18:50"
+      },
+      "hijri": ""
+    },
+    "2026-11-04": {
+      "timings": {
+        "Fajr": "05:37",
+        "Sunrise": "06:43",
+        "Dhuhr": "12:13",
+        "Asr": "15:21",
+        "Maghrib": "17:43",
+        "Isha": "18:49"
+      },
+      "hijri": ""
+    },
+    "2026-11-05": {
+      "timings": {
+        "Fajr": "05:38",
+        "Sunrise": "06:44",
+        "Dhuhr": "12:14",
+        "Asr": "15:20",
+        "Maghrib": "17:43",
+        "Isha": "18:49"
+      },
+      "hijri": ""
+    },
+    "2026-11-06": {
+      "timings": {
+        "Fajr": "05:39",
+        "Sunrise": "06:45",
+        "Dhuhr": "12:14",
+        "Asr": "15:20",
+        "Maghrib": "17:42",
+        "Isha": "18:48"
+      },
+      "hijri": ""
+    },
+    "2026-11-07": {
+      "timings": {
+        "Fajr": "05:39",
+        "Sunrise": "06:45",
+        "Dhuhr": "12:14",
+        "Asr": "15:19",
+        "Maghrib": "17:41",
+        "Isha": "18:48"
+      },
+      "hijri": ""
+    },
+    "2026-11-08": {
+      "timings": {
+        "Fajr": "05:40",
+        "Sunrise": "06:46",
+        "Dhuhr": "12:14",
+        "Asr": "15:19",
+        "Maghrib": "17:41",
+        "Isha": "18:47"
+      },
+      "hijri": ""
+    },
+    "2026-11-09": {
+      "timings": {
+        "Fajr": "05:40",
+        "Sunrise": "06:47",
+        "Dhuhr": "12:14",
+        "Asr": "15:19",
+        "Maghrib": "17:40",
+        "Isha": "18:47"
+      },
+      "hijri": ""
+    },
+    "2026-11-10": {
+      "timings": {
+        "Fajr": "05:41",
+        "Sunrise": "06:48",
+        "Dhuhr": "12:14",
+        "Asr": "15:18",
+        "Maghrib": "17:40",
+        "Isha": "18:46"
+      },
+      "hijri": ""
+    },
+    "2026-11-11": {
+      "timings": {
+        "Fajr": "05:42",
+        "Sunrise": "06:48",
+        "Dhuhr": "12:14",
+        "Asr": "15:18",
+        "Maghrib": "17:39",
+        "Isha": "18:46"
+      },
+      "hijri": ""
+    },
+    "2026-11-12": {
+      "timings": {
+        "Fajr": "05:42",
+        "Sunrise": "06:49",
+        "Dhuhr": "12:14",
+        "Asr": "15:17",
+        "Maghrib": "17:39",
+        "Isha": "18:45"
+      },
+      "hijri": ""
+    },
+    "2026-11-13": {
+      "timings": {
+        "Fajr": "05:43",
+        "Sunrise": "06:50",
+        "Dhuhr": "12:14",
+        "Asr": "15:17",
+        "Maghrib": "17:38",
+        "Isha": "18:45"
+      },
+      "hijri": ""
+    },
+    "2026-11-14": {
+      "timings": {
+        "Fajr": "05:44",
+        "Sunrise": "06:51",
+        "Dhuhr": "12:14",
+        "Asr": "15:17",
+        "Maghrib": "17:38",
+        "Isha": "18:45"
+      },
+      "hijri": ""
+    },
+    "2026-11-15": {
+      "timings": {
+        "Fajr": "05:44",
+        "Sunrise": "06:52",
+        "Dhuhr": "12:15",
+        "Asr": "15:16",
+        "Maghrib": "17:37",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-11-16": {
+      "timings": {
+        "Fajr": "05:45",
+        "Sunrise": "06:52",
+        "Dhuhr": "12:15",
+        "Asr": "15:16",
+        "Maghrib": "17:37",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-11-17": {
+      "timings": {
+        "Fajr": "05:46",
+        "Sunrise": "06:53",
+        "Dhuhr": "12:15",
+        "Asr": "15:16",
+        "Maghrib": "17:36",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-11-18": {
+      "timings": {
+        "Fajr": "05:46",
+        "Sunrise": "06:54",
+        "Dhuhr": "12:15",
+        "Asr": "15:16",
+        "Maghrib": "17:36",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-11-19": {
+      "timings": {
+        "Fajr": "05:47",
+        "Sunrise": "06:55",
+        "Dhuhr": "12:15",
+        "Asr": "15:15",
+        "Maghrib": "17:36",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-11-20": {
+      "timings": {
+        "Fajr": "05:48",
+        "Sunrise": "06:55",
+        "Dhuhr": "12:16",
+        "Asr": "15:15",
+        "Maghrib": "17:35",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-11-21": {
+      "timings": {
+        "Fajr": "05:48",
+        "Sunrise": "06:56",
+        "Dhuhr": "12:16",
+        "Asr": "15:15",
+        "Maghrib": "17:35",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-11-22": {
+      "timings": {
+        "Fajr": "05:49",
+        "Sunrise": "06:57",
+        "Dhuhr": "12:16",
+        "Asr": "15:15",
+        "Maghrib": "17:35",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-11-23": {
+      "timings": {
+        "Fajr": "05:50",
+        "Sunrise": "06:58",
+        "Dhuhr": "12:16",
+        "Asr": "15:15",
+        "Maghrib": "17:35",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-11-24": {
+      "timings": {
+        "Fajr": "05:50",
+        "Sunrise": "06:59",
+        "Dhuhr": "12:17",
+        "Asr": "15:15",
+        "Maghrib": "17:35",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-11-25": {
+      "timings": {
+        "Fajr": "05:51",
+        "Sunrise": "06:59",
+        "Dhuhr": "12:17",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-11-26": {
+      "timings": {
+        "Fajr": "05:52",
+        "Sunrise": "07:00",
+        "Dhuhr": "12:17",
+        "Asr": "15:14",
+        "Maghrib": "17:34",
+        "Isha": "18:42"
+      },
+      "hijri": ""
+    },
+    "2026-11-27": {
+      "timings": {
+        "Fajr": "05:53",
+        "Sunrise": "07:01",
+        "Dhuhr": "12:18",
+        "Asr": "15:14",
+        "Maghrib": "17:34",
+        "Isha": "18:42"
+      },
+      "hijri": ""
+    },
+    "2026-11-28": {
+      "timings": {
+        "Fajr": "05:53",
+        "Sunrise": "07:02",
+        "Dhuhr": "12:18",
+        "Asr": "15:14",
+        "Maghrib": "17:34",
+        "Isha": "18:42"
+      },
+      "hijri": ""
+    },
+    "2026-11-29": {
+      "timings": {
+        "Fajr": "05:54",
+        "Sunrise": "07:02",
+        "Dhuhr": "12:18",
+        "Asr": "15:14",
+        "Maghrib": "17:34",
+        "Isha": "18:42"
+      },
+      "hijri": ""
+    },
+    "2026-11-30": {
+      "timings": {
+        "Fajr": "05:55",
+        "Sunrise": "07:03",
+        "Dhuhr": "12:19",
+        "Asr": "15:14",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-12-01": {
+      "timings": {
+        "Fajr": "05:55",
+        "Sunrise": "07:04",
+        "Dhuhr": "12:19",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-12-02": {
+      "timings": {
+        "Fajr": "05:56",
+        "Sunrise": "07:05",
+        "Dhuhr": "12:19",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-12-03": {
+      "timings": {
+        "Fajr": "05:57",
+        "Sunrise": "07:05",
+        "Dhuhr": "12:20",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-12-04": {
+      "timings": {
+        "Fajr": "05:57",
+        "Sunrise": "07:06",
+        "Dhuhr": "12:20",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-12-05": {
+      "timings": {
+        "Fajr": "05:58",
+        "Sunrise": "07:07",
+        "Dhuhr": "12:21",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-12-06": {
+      "timings": {
+        "Fajr": "05:59",
+        "Sunrise": "07:08",
+        "Dhuhr": "12:21",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:43"
+      },
+      "hijri": ""
+    },
+    "2026-12-07": {
+      "timings": {
+        "Fajr": "05:59",
+        "Sunrise": "07:08",
+        "Dhuhr": "12:21",
+        "Asr": "15:15",
+        "Maghrib": "17:34",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-12-08": {
+      "timings": {
+        "Fajr": "06:00",
+        "Sunrise": "07:09",
+        "Dhuhr": "12:22",
+        "Asr": "15:16",
+        "Maghrib": "17:35",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-12-09": {
+      "timings": {
+        "Fajr": "06:01",
+        "Sunrise": "07:10",
+        "Dhuhr": "12:22",
+        "Asr": "15:16",
+        "Maghrib": "17:35",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-12-10": {
+      "timings": {
+        "Fajr": "06:01",
+        "Sunrise": "07:10",
+        "Dhuhr": "12:23",
+        "Asr": "15:16",
+        "Maghrib": "17:35",
+        "Isha": "18:44"
+      },
+      "hijri": ""
+    },
+    "2026-12-11": {
+      "timings": {
+        "Fajr": "06:02",
+        "Sunrise": "07:11",
+        "Dhuhr": "12:23",
+        "Asr": "15:16",
+        "Maghrib": "17:35",
+        "Isha": "18:45"
+      },
+      "hijri": ""
+    },
+    "2026-12-12": {
+      "timings": {
+        "Fajr": "06:02",
+        "Sunrise": "07:12",
+        "Dhuhr": "12:24",
+        "Asr": "15:17",
+        "Maghrib": "17:36",
+        "Isha": "18:45"
+      },
+      "hijri": ""
+    },
+    "2026-12-13": {
+      "timings": {
+        "Fajr": "06:03",
+        "Sunrise": "07:12",
+        "Dhuhr": "12:24",
+        "Asr": "15:17",
+        "Maghrib": "17:36",
+        "Isha": "18:45"
+      },
+      "hijri": ""
+    },
+    "2026-12-14": {
+      "timings": {
+        "Fajr": "06:04",
+        "Sunrise": "07:13",
+        "Dhuhr": "12:25",
+        "Asr": "15:17",
+        "Maghrib": "17:36",
+        "Isha": "18:46"
+      },
+      "hijri": ""
+    },
+    "2026-12-15": {
+      "timings": {
+        "Fajr": "06:04",
+        "Sunrise": "07:14",
+        "Dhuhr": "12:25",
+        "Asr": "15:18",
+        "Maghrib": "17:37",
+        "Isha": "18:46"
+      },
+      "hijri": ""
+    },
+    "2026-12-16": {
+      "timings": {
+        "Fajr": "06:05",
+        "Sunrise": "07:14",
+        "Dhuhr": "12:26",
+        "Asr": "15:18",
+        "Maghrib": "17:37",
+        "Isha": "18:46"
+      },
+      "hijri": ""
+    },
+    "2026-12-17": {
+      "timings": {
+        "Fajr": "06:05",
+        "Sunrise": "07:15",
+        "Dhuhr": "12:26",
+        "Asr": "15:18",
+        "Maghrib": "17:37",
+        "Isha": "18:47"
+      },
+      "hijri": ""
+    },
+    "2026-12-18": {
+      "timings": {
+        "Fajr": "06:06",
+        "Sunrise": "07:15",
+        "Dhuhr": "12:27",
+        "Asr": "15:19",
+        "Maghrib": "17:38",
+        "Isha": "18:47"
+      },
+      "hijri": ""
+    },
+    "2026-12-19": {
+      "timings": {
+        "Fajr": "06:06",
+        "Sunrise": "07:16",
+        "Dhuhr": "12:27",
+        "Asr": "15:19",
+        "Maghrib": "17:38",
+        "Isha": "18:48"
+      },
+      "hijri": ""
+    }
+  },
+  loading = false,
+  lastFetch = 0,
+  currentDay = '',
+  weatherAt = 0;
+// ===== DATE AND TIME HELPERS =====
+function parts(d = new Date()) {
+  return Object.fromEntries(new Intl.DateTimeFormat('en-CA', {
+    timeZone: TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23'
+  }).formatToParts(d).map(p => [p.type, p.value]))
+}
+
+function key(p) {
+  return `${p.year}-${p.month}-${p.day}`
+}
+
+function nextDay(k) {
+  let d = new Date(k + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10)
+}
+
+function mins(s) {
+  let m = /^(\d{2}):(\d{2})/.exec(s || '');
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null
+}
+
+function epoch(k, s) {
+  let [y, m, d] = k.split('-').map(Number), n = mins(s), target = Date.UTC(y, m - 1, d, Math.floor(n / 60), n % 60), guess = target;
+  for (let i = 0; i < 3; i++) {
+    let p = parts(new Date(guess));
+    guess += target - Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second)
+  }
+  return guess
+}
+
+function pretty(s) {
+  let n = mins(s);
+  if (n === null) return '—';
+  let h = Math.floor(n / 60);
+  return `${h%12||12}:${String(n%60).padStart(2,'0')} <small>${h>=12?'PM':'AM'}</small>`
+}
+
+function apply() {
+  $('mosqueName').textContent = cfg.name;
+  $('message').textContent = cfg.message;
+  $('methodLabel').textContent = 'TimesPrayer.com • ISNA • Standard Asr'
+}
+// ===== PRAYER TABLE RENDERING =====
+function render(k, active) {
+  const d = days[k];
+  $('prayers').innerHTML = NAMES.map((n, i) => `<div class="row ${active===n?'active':''}"><div class="prayer">${n}<span class="ar" lang="ar">${AR[i]}</span></div><div class="time">${pretty(d?.timings[n])}</div><div class="iqama">${n==='Sunrise'?'—':pretty(cfg.iqama[n])}</div></div>`).join('');
+  $('hijri').textContent = d?.hijri || 'Hijri date: refresh from TimesPrayer (source date unavailable)'
+}
+async function getDay(k) {
+  if (days[k]) return;
+  throw Error('Refresh source schedule');
+}
+async function prayers(k) {
+  if (loading) return;
+  loading = true;
+  lastFetch = Date.now();
+  try {
+    await getDay(k);
+    $('prayerStatus').textContent = 'TimesPrayer.com • ' + k + ' • imported 21 Oct 2026';
+    await getDay(nextDay(k))
+  } catch (e) {
+    $('prayerStatus').textContent = days[k] ? 'Today loaded • tomorrow unavailable; retrying' : 'Schedule needs updating • use Live TimesPrayer or import its saved page';
+  } finally {
+    loading = false;
+    tick(false)
+  }
+}
+// ===== LIVE CLOCK AND NEXT-PRAYER COUNTDOWN =====
+function tick(fetchAllowed = true) {
+  let now = new Date(),
+    p = parts(now),
+    k = key(p);
+  let t = p.hour * 3600 + p.minute * 60 + Number(p.second);
+  $('clock').textContent = `${Number(p.hour)%12||12}:${p.minute}`;
+  $('seconds').textContent = ':' + p.second;
+  $('ampm').textContent = Number(p.hour) >= 12 ? 'PM' : 'AM';
+  $('date').textContent = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(now);
+  if (currentDay !== k) {
+    currentDay = k;
+    $('hijri').textContent = '';
+  }
+  let d = days[k],
+    next = d ? NAMES.filter(n => n !== 'Sunrise').find(n => mins(d.timings[n]) * 60 > t) : null,
+    remaining = null;
+  if (next) {
+    remaining = mins(d.timings[next]) * 60 - t;
+    $('nextLabel').textContent = 'Next prayer'
+  } else if (d && days[nextDay(k)]) {
+    next = 'Fajr';
+    remaining = Math.max(0, Math.ceil((epoch(nextDay(k), days[nextDay(k)].timings.Fajr) - now.getTime()) / 1000));
+    $('nextLabel').textContent = 'Tomorrow’s first prayer'
+  }
+  $('nextName').textContent = next || (d ? 'Awaiting tomorrow’s schedule' : 'Prayer times unavailable');
+  $('countdown').textContent = remaining === null ? '--:--:--' : [Math.floor(remaining / 3600), Math.floor(remaining / 60) % 60, remaining % 60].map(n => String(n).padStart(2, '0')).join(':');
+  render(k, d && remaining !== null && $('nextLabel').textContent === 'Next prayer' ? next : null);
+  if (fetchAllowed && (!days[k] || !days[nextDay(k)]) && Date.now() - lastFetch > 60000) prayers(k)
+}
+
+function condition(c) {
+  if (c === 0) return ['☀', 'Clear sky'];
+  if (c <= 3) return ['⛅', 'Partly cloudy'];
+  if (c <= 48) return ['☁', 'Fog / overcast'];
+  if (c <= 67) return ['☂', 'Rain'];
+  if (c <= 77) return ['❄', 'Snow'];
+  if (c <= 82) return ['☂', 'Rain showers'];
+  if (c <= 86) return ['❄', 'Snow showers'];
+  return ['ϟ', 'Thunderstorms']
+}
+// User-supplied response sample. This is a snapshot, not a live observation.
+// ===== WEATHER: request parameters and clearly labeled sample =====
+const WEATHER_REQUEST = {
+  place_id: 'tampa',
+  language: 'en',
+  unit: 'us'
+};
+const WEATHER_SAMPLE = {
+  timezone: 'America/New_York',
+  units: 'us',
+  current: {
+    icon_num: 4,
+    weather: 'Partly sunny',
+    temperature: 81.7,
+    feels_like: 83,
+    dew_point: 56.5,
+    wind: {
+      speed: 9.7,
+      gusts: 18.1,
+      angle: 48,
+      dir: 'NE'
+    },
+    precipitation: {
+      total: 0
+    },
+    cloud_cover: 34,
+    irradiance: 544.4,
+    pressure: 30,
+    uv_index: 5.53,
+    humidity: 42
+  },
+  hourly: {
+    date: '2026-10-21T15:00:00',
+    summary: 'Partly sunny',
+    temperature: 81.7
+  },
+  daily: {
+    day: '2026-10-21',
+    summary: 'Sunny, more clouds in the afternoon and evening. Temperature 61/82 °F.',
+    all_day: {
+      temperature_min: 60.5,
+      temperature_max: 81.7,
+      wind_speed: 5.5,
+      probability: {
+        precipitation: 0
+      }
+    }
+  },
+  minutely: {
+    summary: 'No precipitation over the next hour.'
+  }
+};
+// ===== WEATHER CARD RENDERING =====
+function showWeather(data, sample = false) {
+  const c = data.current;
+  if (!c || !Number.isFinite(c.temperature) || data.units !== 'us') throw Error('Expected a US-unit response with current.temperature');
+  const summary = c.weather || 'Current conditions',
+    low = data.daily?.all_day?.temperature_min,
+    high = data.daily?.all_day?.temperature_max;
+  const icon = /thunder/i.test(summary) ? 'ϟ' : /snow/i.test(summary) ? '❄' : /rain|shower/i.test(summary) ? '☂' : /partly/i.test(summary) ? '⛅' : /cloud|fog/i.test(summary) ? '☁' : '☀';
+  $('weatherIcon').textContent = icon;
+  $('temperature').textContent = c.temperature.toFixed(1) + '°F';
+  $('weatherText').textContent = summary + ' · Tampa, FL';
+  const details = [];
+  if (Number.isFinite(c.feels_like)) details.push('Feels like ' + c.feels_like + '°F');
+  if (Number.isFinite(c.humidity)) details.push('Humidity ' + c.humidity + '%');
+  if (Number.isFinite(c.wind?.speed)) details.push('Wind ' + (c.wind.dir || '') + ' ' + c.wind.speed + ' mph');
+  if (Number.isFinite(low) && Number.isFinite(high)) details.push('Low ' + Math.round(low) + '° / High ' + Math.round(high) + '°');
+  $('weatherDetails').textContent = details.join(' · ');
+  $('weatherSource').textContent = sample ? 'SAMPLE DATA • supplied snapshot: Oct 21, 2026 • not live' : 'API response received ' + new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour: 'numeric',
+    minute: '2-digit'
+  }).format(new Date()) + ' • observation time not provided';
+  $('weatherSummary').textContent = data.minutely?.summary || data.daily?.summary || '';
+}
+// Enter an authorized HTTPS endpoint in Settings. It receives the request fields
+// as query parameters, and must return the supplied response shape with CORS.
+// Keep any private API credentials on your server, not in this HTML.
+// ===== LIVE WEATHER CONNECTION: HTTPS endpoint configured in Settings =====
+async function weather() {
+  if (!cfg.weatherEndpoint) {
+    showWeather(WEATHER_SAMPLE, true);
+    return
+  }
+  try {
+    let u = new URL(cfg.weatherEndpoint);
+    if (u.protocol !== 'https:') throw Error('HTTPS required');
+    for (const [k, v] of Object.entries(WEATHER_REQUEST)) u.searchParams.set(k, v);
+    let r = await fetch(u, {
+      signal: AbortSignal.timeout(15000)
+    });
+    if (!r.ok) throw Error('HTTP ' + r.status);
+    showWeather(await r.json());
+    weatherAt = Date.now()
+  } catch (e) {
+    showWeather(WEATHER_SAMPLE, true);
+    $('weatherSource').textContent = 'LIVE UPDATE FAILED • showing supplied Oct 21, 2026 sample'
+  }
+}
+try {
+  Object.assign(days, JSON.parse(localStorage.getItem('timesprayer-import') || '{}'))
+} catch (e) {}
+$('live').onclick = () => {
+  $('sourceFrame').src = 'https://timesprayer.com/widgets.php?frame=2&lang=en&name=tampa';
+  $('liveDialog').showModal()
+};
+$('importSource').onchange = async e => {
+  try {
+    const f = e.target.files[0];
+    if (!f) return;
+    const doc = new DOMParser().parseFromString(await f.text(), 'text/html');
+    const txt = doc.body.textContent.replace(/\s+/g, ' ');
+    if (!/Tampa/i.test(txt)) throw Error('Choose the Tampa page');
+    let found = 0;
+    for (const row of doc.querySelectorAll('tr')) {
+      const cells = [...row.querySelectorAll('td')].map(c => c.textContent.trim());
+      const m = /^(\d{2})-(\d{2})-(\d{4})$/.exec(cells[0] || '');
+      if (!m || cells.length < 7) continue;
+      let timings = {};
+      for (let i = 0; i < 6; i++) {
+        const t = /(\d{1,2}):(\d{2})\s*([ap]m)/i.exec(cells[i + 1]);
+        if (!t) throw Error('Unrecognized time');
+        timings[NAMES[i]] = String(+t[1] % 12 + (/pm/i.test(t[3]) ? 12 : 0)).padStart(2, '0') + ':' + t[2]
+      }
+      days[`${m[3]}-${m[2]}-${m[1]}`] = {
+        timings,
+        hijri: ''
+      };
+      found++
+    }
+    if (!found) throw Error('No schedule found');
+    const date = /Date:\s*[^,]+,\s*(\d+)\s+(\w+)\s+(\d{4})/.exec(txt),
+      h = /Hijri:\s*(.*?)\s*Time now:/.exec(txt);
+    if (date && h) {
+      let mo = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(date[2]) + 1;
+      let k = `${date[3]}-${String(mo).padStart(2,'0')}-${date[1].padStart(2,'0')}`;
+      const months = {
+        'Muharram': 'محرم',
+        'Safar': 'صفر',
+        'Rabi I': 'ربيع الأول',
+        'Rabi II': 'ربيع الآخر',
+        'Jumada I': 'جمادى الأولى',
+        'Jumada II': 'جمادى الآخرة',
+        'Rajab': 'رجب',
+        'Shaban': 'شعبان',
+        'Ramadan': 'رمضان',
+        'Shawwal': 'شوال',
+        'Dhu al-Qidah': 'ذو القعدة',
+        'Dhu al-Hijjah': 'ذو الحجة'
+      };
+      let v = h[1].replace(/^[^,]+,\s*/, '');
+      for (const [a, b] of Object.entries(months).sort((a, b) => b[0].length - a[0].length))
+        if (v.includes(a)) {
+          v = v.replace(a, b);
+          break
+        } v = v.replace(/\d/g, n => '٠١٢٣٤٥٦٧٨٩' [n]);
+      if (days[k]) days[k].hijri = v + ' هـ • TimesPrayer.com'
+    }
+    localStorage.setItem('timesprayer-import', JSON.stringify(days));
+    $('saveStatus').textContent = `Imported ${found} schedule rows from TimesPrayer.`;
+    tick()
+  } catch (err) {
+    $('saveStatus').textContent = err.message
+  }
+};
+// ===== FULLSCREEN AND SETTINGS CONTROLS =====
+$('full').onclick = async () => {
+  try {
+    if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen()
+  } catch (e) {
+    $('full').textContent = 'Use F11 for full screen'
+  }
+};
+$('settings').onclick = () => {
+  $('nameInput').value = cfg.name;
+  $('messageInput').value = cfg.message;
+  $('school').value = 0;
+  $('weatherEndpoint').value = cfg.weatherEndpoint || '';
+  $('iqamaInputs').innerHTML = '';
+  for (const n of NAMES.filter(n => n !== 'Sunrise')) {
+    let l = document.createElement('label');
+    l.textContent = n + ' iqama';
+    let i = document.createElement('input');
+    i.type = 'time';
+    i.id = 'iq-' + n;
+    i.value = cfg.iqama[n] || '';
+    l.append(i);
+    $('iqamaInputs').append(l)
+  }
+  $('saveStatus').textContent = '';
+  $('dialog').showModal()
+};
+$('close').onclick = () => $('dialog').close();
+$('form').onsubmit = e => {
+  e.preventDefault();
+  let old = cfg.school;
+  cfg.name = $('nameInput').value.trim() || 'Tampa Mosque';
+  cfg.message = $('messageInput').value;
+  cfg.school = 0;
+  cfg.weatherEndpoint = $('weatherEndpoint').value.trim();
+  cfg.iqama = {};
+  for (const n of NAMES.filter(n => n !== 'Sunrise')) cfg.iqama[n] = $('iq-' + n).value;
+  try {
+    localStorage.setItem('tampa-mosque-settings', JSON.stringify(cfg))
+  } catch (e) {
+    $('saveStatus').textContent = 'Settings apply for this session; browser storage unavailable.';
+    apply();
+    return
+  }
+  apply();
+  $('dialog').close();
+  weather();
+  tick()
+}; // ===== START DISPLAY / REFRESH INTERVALS =====
+apply();
+tick();
+weather();
+setInterval(tick, 1000);
+setInterval(weather, 600000);
+  </script>
+ </body>
+</html>
