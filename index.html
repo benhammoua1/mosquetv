@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masjid Omar Al Mokhtar Tampa - Prayer Display</title>
+<style>
+  :root {
+    --bg-main: #e6f2fc;
+    --bg-card: #ffffff;
+    --bg-highlight: #dff2e8;
+    --primary-green: #1b6b43;
+    --primary-dark: #0f4027;
+    --gold-accent: #b8860b;
+    --gold-bg: #fdf8e7;
+    --text-main: #13271c;
+    --text-muted: #4e6b5a;
+    --border-subtle: rgba(27, 107, 67, 0.18);
+    --shadow-soft: 0 8px 24px rgba(15, 64, 105, 0.08);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #ebf5ff 0%, #cce5fa 100%);
+    color: var(--text-main);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2.5vh 3vw;
+  }
+
+  /* Subtle geometric accent border */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 12px;
+    border: 1.5px solid rgba(27, 107, 67, 0.25);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-subtle);
+    padding-bottom: 1.8vh;
+  }
+
+  .masjid-info h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-green);
+    letter-spacing: 0.4px;
+  }
+
+  .masjid-info p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .clock-box {
+    text-align: right;
+  }
+
+  #live-clock {
+    font-size: 3.8rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  #live-clock span {
+    font-size: 1.5rem;
+    color: var(--gold-accent);
+    margin-left: 6px;
+  }
+
+  .dates {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .dates strong {
+    color: var(--primary-green);
+    font-weight: 700;
+  }
+
+  /* MAIN SECTION */
+  main {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr;
+    gap: 2.5vw;
+    flex: 1;
+    margin: 2.2vh 0;
+  }
+
+  /* PRAYER TABLE */
+  .prayer-board {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 2vh 2vw;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .table-header, .prayer-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    align-items: center;
+    padding: 0 1.5vw;
+  }
+
+  .table-header {
+    color: var(--gold-accent);
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding-bottom: 1vh;
+    border-bottom: 1.5px solid var(--border-subtle);
+  }
+
+  .prayer-row {
+    flex: 1;
+    border-radius: 12px;
+    margin: 0.6vh 0;
+    background: #f4f9fe;
+    border: 1px solid rgba(27, 107, 67, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .prayer-row.active {
+    background: var(--bg-highlight);
+    border: 2.5px solid var(--primary-green);
+    box-shadow: 0 6px 20px rgba(27, 107, 67, 0.16);
+    transform: scale(1.01);
+  }
+
+  .prayer-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .prayer-arabic {
+    font-size: 2.15rem;
+    font-weight: 700;
+    color: var(--gold-accent);
+    text-align: right;
+  }
+
+  .prayer-time {
+    font-size: 2.1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .iqamah-time {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--primary-green);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prayer-row.active .prayer-time {
+    color: var(--text-main);
+  }
+
+  .prayer-row.active .iqamah-time {
+    color: var(--primary-dark);
+  }
+
+  /* RIGHT SIDEBAR */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2vh;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 2.2vh 1.8vw;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .countdown-card {
+    flex: 1.3;
+    text-align: center;
+    background: linear-gradient(145deg, #ffffff, #e1f0fc);
+    border: 2px solid var(--primary-green);
+  }
+
+  .card-label {
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold-accent);
+    margin-bottom: 1vh;
+  }
+
+  #next-prayer-title {
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 0.8vh;
+  }
+
+  #countdown-timer {
+    font-size: 3.4rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary-green);
+  }
+
+  .jumuah-card {
+    flex: 1;
+    background: var(--gold-bg);
+    border: 1.5px solid rgba(184, 134, 11, 0.35);
+  }
+
+  .jumuah-single {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.4vh;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  .jumuah-single strong {
+    font-size: 2.15rem;
+    font-weight: 800;
+    color: var(--primary-green);
+  }
+
+  .credit-card {
+    flex: 0.65;
+    align-items: center;
+    text-align: center;
+  }
+
+  .credit-card span {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .credit-card a {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--primary-green);
+    text-decoration: none;
+  }
+
+  .credit-card a:hover {
+    text-decoration: underline;
+  }
+
+  /* FOOTER / ANNOUNCEMENTS */
+  footer {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 1.4vh 2vw;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    position: relative;
+    z-index: 10;
+  }
+
+  .badge-btn {
+    background: var(--primary-green);
+    color: #ffffff;
+    font-weight: 800;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(27, 107, 67, 0.22);
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+
+  .badge-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.03);
+  }
+
+  #announcement-text {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-main);
+    transition: opacity 0.5s ease;
+  }
+
+  /* MODAL FOR CUSTOMIZING REMINDERS */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(19, 39, 28, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal-box {
+    background: var(--bg-card);
+    border: 2px solid var(--primary-green);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 650px;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  }
+
+  .modal-box h2 {
+    color: var(--primary-green);
+    margin-bottom: 8px;
+    font-size: 1.65rem;
+  }
+
+  .modal-box p {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    margin-bottom: 16px;
+  }
+
+  .modal-box textarea {
+    width: 100%;
+    height: 180px;
+    background: #f4f9fe;
+    color: var(--text-main);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1.05rem;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: none;
+  }
+
+  .modal-box textarea:focus {
+    outline: none;
+    border-color: var(--primary-green);
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .btn-cancel, .btn-save {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-cancel {
+    background: #e1f0fc;
+    color: var(--text-main);
+  }
+
+  .btn-save {
+    background: var(--primary-green);
+    color: #ffffff;
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="masjid-info">
+      <h1>MASJID OMAR AL MOKHTAR TAMPA</h1>
+      <p>Please silence your mobile phones &bull; Straighten the rows</p>
+    </div>
+    <div class="clock-box">
+      <div id="live-clock">12:00:00 <span>PM</span></div>
+      <div class="dates">
+        <span id="gregorian-date">Thursday, November 12, 2026</span> &nbsp;|&nbsp;
+        <strong id="hijri-date">2 Jumada Al-Thani 1448</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <!-- PRAYER TIMES TABLE -->
+    <section class="prayer-board">
+      <div class="table-header">
+        <div>Prayer</div>
+        <div>Adhan</div>
+        <div>Iqamah</div>
+        <div style="text-align: right;">الصلاة</div>
+      </div>
+
+      <div id="prayer-list" style="display:flex; flex-direction:column; flex:1; justify-content:space-between;">
+        <!-- Rows injected by JS -->
+      </div>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="card countdown-card">
+        <div class="card-label">Next Iqamah In</div>
+        <div id="next-prayer-title">Asr</div>
+        <div id="countdown-timer">01:24:35</div>
+      </div>
+
+      <div class="card jumuah-card">
+        <div class="card-label">Jumu'ah Prayer</div>
+        <div class="jumuah-single">
+          <span>Khutbah &amp; Salah</span>
+          <strong>1:30 PM</strong>
+        </div>
+      </div>
+
+      <div class="card credit-card">
+        <span>Created by:</span>
+        <a href="https://www.benhamtech.com" target="_blank">www.benhamtech.com</a>
+      </div>
+    </aside>
+  </main>
+
+  <!-- FOOTER TICKER -->
+  <footer>
+    <button class="badge-btn" id="open-reminder-modal" title="Click to customize announcements">Reminder</button>
+    <div id="announcement-text">Please silence all mobile phones before entering the prayer hall.</div>
+  </footer>
+
+  <!-- ANNOUNCEMENT EDITOR MODAL -->
+  <div class="modal-overlay" id="reminder-modal">
+    <div class="modal-box">
+      <h2>Customize Masjid Announcements</h2>
+      <p>Enter one announcement per line. Changes save automatically to this display.</p>
+      <textarea id="announcements-input"></textarea>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancel-modal">Cancel</button>
+        <button class="btn-save" id="save-modal">Save Announcements</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ==========================================
+  // 1. CONFIGURE ADHAN TIMES (24-HOUR FORMAT)
+  // ==========================================
+  // PRAYER TIMES API CONFIGURATION — Tampa, Florida
+  const API_CONFIG = {
+    latitude: 27.9475,
+    longitude: -82.4584,
+    method: 2, // ISNA calculation method
+    school: 0, // Shafi Asr calculation
+    timezone: "America/New_York"
+  };
+
+  // Fallback values are used only if the API cannot be reached.
+  let ADHAN_TIMES = {
+    Fajr: "05:43",
+    Dhuhr: "12:14",
+    Asr: "15:17",
+    Maghrib: "17:38",
+    Isha: "18:45"
+  };
+
+  // Retrieve today's prayer times from the AlAdhan API.
+  async function loadPrayerTimes() {
+    try {
+      // Build the date in Tampa's time zone (DD-MM-YYYY).
+      const dateParts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: API_CONFIG.timezone,
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      }).format(new Date());
+      const apiDate = dateParts.replace(/\//g, "-");
+
+      const url =
+        `https://api.aladhan.com/v1/timings/${apiDate}` +
+        `?latitude=${API_CONFIG.latitude}` +
+        `&longitude=${API_CONFIG.longitude}` +
+        `&method=${API_CONFIG.method}` +
+        `&school=${API_CONFIG.school}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Prayer API returned HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.code !== 200 || !result.data || !result.data.timings) {
+        throw new Error("The prayer API returned an invalid response");
+      }
+
+      const times = result.data.timings;
+      ADHAN_TIMES = {
+        Fajr: times.Fajr.split(" ")[0],
+        Dhuhr: times.Dhuhr.split(" ")[0],
+        Asr: times.Asr.split(" ")[0],
+        Maghrib: times.Maghrib.split(" ")[0],
+        Isha: times.Isha.split(" ")[0]
+      };
+
+      console.log("Prayer times successfully loaded from AlAdhan:", ADHAN_TIMES);
+      updateDisplay();
+    } catch (error) {
+      console.error("Unable to load prayer times from AlAdhan. Keeping fallback times.", error);
+    }
+  }
+
+  const DEFAULT_ANNOUNCEMENTS = [
+    "Please silence all mobile phones before entering the prayer hall.",
+    "Weekly Tafsir & Family Halaqa every Saturday after Maghrib.",
+    "Support Masjid Omar Al Mokhtar Tampa — donation boxes are near the main exit.",
+    "Parking reminder: Please do not block neighboring driveways."
+  ];
+
+  // Load saved announcements from localStorage or use defaults
+  let announcements = JSON.parse(localStorage.getItem("masjid_announcements")) || [...DEFAULT_ANNOUNCEMENTS];
+
+  // ==========================================
+  // 2. TIME & IQAMAH CALCULATION HELPERS
+  // ==========================================
+  function addMinutes(time24, minsToAdd) {
+    const [h, m] = time24.split(":").map(Number);
+    const totalMins = (h * 60 + m + minsToAdd) % (24 * 60);
+    const newH = String(Math.floor(totalMins / 60)).padStart(2, "0");
+    const newM = String(totalMins % 60).padStart(2, "0");
+    return `${newH}:${newM}`;
+  }
+
+  // Automatically detects whether US Daylight Saving Time (EDT) is active
+  function isDaylightSavingTime(date) {
+    const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+    const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+    return Math.max(jan, jul) !== date.getTimezoneOffset();
+  }
+
+  function buildPrayerSchedule(now) {
+    // Dhuhr Iqamah is 2:00 PM (14:00) during Daylight Saving Time, otherwise 1:00 PM (13:00)
+    const dhuhrIqamah = isDaylightSavingTime(now) ? "14:00" : "13:00";
+
+    return [
+      { name: "Fajr",    arabic: "الفجر",   adhan: ADHAN_TIMES.Fajr,    iqamah: addMinutes(ADHAN_TIMES.Fajr, 20) },
+      { name: "Dhuhr",   arabic: "الظهر",   adhan: ADHAN_TIMES.Dhuhr,   iqamah: dhuhrIqamah },
+      { name: "Asr",     arabic: "العصر",   adhan: ADHAN_TIMES.Asr,     iqamah: "16:00" },
+      { name: "Maghrib", arabic: "المغرب",  adhan: ADHAN_TIMES.Maghrib, iqamah: addMinutes(ADHAN_TIMES.Maghrib, 10) },
+      { name: "Isha",    arabic: "العشاء",  adhan: ADHAN_TIMES.Isha,    iqamah: addMinutes(ADHAN_TIMES.Isha, 20) }
+    ];
+  }
+
+  function format12Hour(time24) {
+    const [hStr, mStr] = time24.split(":");
+    let h = parseInt(hStr, 10);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return `${h}:${mStr} ${ampm}`;
+  }
+
+  function getDateObjectForTime(time24, addDays = 0) {
+    const [h, m] = time24.split(":").map(Number);
+    const d = new Date();
+    d.setDate(d.getDate() + addDays);
+    d.setHours(h, m, 0, 0);
+    return d;
+  }
+
+  // ==========================================
+  // 3. RENDER PRAYER ROWS & COUNTDOWN
+  // ==========================================
+  function updateDisplay() {
+    const now = new Date();
+    const schedule = buildPrayerSchedule(now);
+
+    // Update Live Clock
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    document.getElementById("live-clock").innerHTML = `${hours}:${minutes}:${seconds} <span>${ampm}</span>`;
+
+    // Update Gregorian & Hijri Dates
+    document.getElementById("gregorian-date").textContent = now.toLocaleDateString("en-US", {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+
+    try {
+      const hijri = new Intl.DateTimeFormat("en-TN-u-ca-islamic", {
+        day: "numeric", month: "long", year: "numeric"
+      }).format(now);
+      document.getElementById("hijri-date").textContent = hijri;
+    } catch (e) {
+      // Fallback if browser lacks islamic calendar locale
+    }
+
+    // Determine Next Iqamah
+    let nextPrayer = null;
+    let nextIqamahDate = null;
+
+    for (let i = 0; i < schedule.length; i++) {
+      const iqamahDate = getDateObjectForTime(schedule[i].iqamah);
+      if (iqamahDate > now) {
+        nextPrayer = schedule[i];
+        nextIqamahDate = iqamahDate;
+        break;
+      }
+    }
+
+    // If all prayers today have passed, next is tomorrow's Fajr
+    if (!nextPrayer) {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowSchedule = buildPrayerSchedule(tomorrow);
+      nextPrayer = tomorrowSchedule[0];
+      nextIqamahDate = getDateObjectForTime(tomorrowSchedule[0].iqamah, 1);
+    }
+
+    // Render Prayer Rows
+    const listContainer = document.getElementById("prayer-list");
+    listContainer.innerHTML = schedule.map(p => {
+      const isActive = p.name === nextPrayer.name;
+      return `
+        <div class="prayer-row ${isActive ? 'active' : ''}">
+          <div class="prayer-name">${p.name}</div>
+          <div class="prayer-time">${format12Hour(p.adhan)}</div>
+          <div class="iqamah-time">${format12Hour(p.iqamah)}</div>
+          <div class="prayer-arabic">${p.arabic}</div>
+        </div>
+      `;
+    }).join("");
+
+    // Update Countdown
+    document.getElementById("next-prayer-title").textContent = nextPrayer.name;
+    const diffMs = nextIqamahDate - now;
+    const totalSecs = Math.max(0, Math.floor(diffMs / 1000));
+    const cdH = String(Math.floor(totalSecs / 3600)).padStart(2, "0");
+    const cdM = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, "0");
+    const cdS = String(totalSecs % 60).padStart(2, "0");
+    document.getElementById("countdown-timer").textContent = `${cdH}:${cdM}:${cdS}`;
+  }
+
+  // ==========================================
+  // 4. ANNOUNCEMENT ROTATION & MODAL EDITOR
+  // ==========================================
+  let announcementIdx = 0;
+  const announcementEl = document.getElementById("announcement-text");
+  announcementEl.textContent = announcements[0];
+
+  setInterval(() => {
+    if (announcements.length <= 1) return;
+    announcementEl.style.opacity = 0;
+    setTimeout(() => {
+      announcementIdx = (announcementIdx + 1) % announcements.length;
+      announcementEl.textContent = announcements[announcementIdx];
+      announcementEl.style.opacity = 1;
+    }, 500);
+  }, 10000);
+
+  const modal = document.getElementById("reminder-modal");
+  const openBtn = document.getElementById("open-reminder-modal");
+  const cancelBtn = document.getElementById("cancel-modal");
+  const saveBtn = document.getElementById("save-modal");
+  const inputArea = document.getElementById("announcements-input");
+
+  openBtn.addEventListener("click", () => {
+    inputArea.value = announcements.join("\n");
+    modal.classList.add("open");
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    modal.classList.remove("open");
+  });
+
+  saveBtn.addEventListener("click", () => {
+    const lines = inputArea.value
+      .split("\n")
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+
+    announcements = lines.length > 0 ? lines : [...DEFAULT_ANNOUNCEMENTS];
+    localStorage.setItem("masjid_announcements", JSON.stringify(announcements));
+    announcementIdx = 0;
+    announcementEl.textContent = announcements[0];
+    modal.classList.remove("open");
+  });
+
+  // Close modal when clicking outside the dialog box
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.remove("open");
+  });
+
+  // Start with fallback times, then load today's times from AlAdhan.
+  updateDisplay();
+  loadPrayerTimes();
+
+  // Keep the clock and countdown current.
+  setInterval(updateDisplay, 1000);
+
+  // Refresh prayer times every 6 hours (also handles a new local date).
+  setInterval(loadPrayerTimes, 6 * 60 * 60 * 1000);
+</script>
+</body>
+</html>
